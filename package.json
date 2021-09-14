@@ -6,6 +6,7 @@
     "dev": "next dev --hostname 0.0.0.0",
     "build": "rm -rf ./build && NODE_ENV=production next build",
     "start": "next start",
+    "export": "next export",
     "lint": "next lint"
   },
   "dependencies": {
