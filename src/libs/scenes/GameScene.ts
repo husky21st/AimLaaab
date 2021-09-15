@@ -44,6 +44,7 @@ export class GameScene extends Container implements IScene {
     super();
     const wr: number = Manager.wr;
     const hr: number = Manager.hr;
+    const textScale: number = wr / 10;
     this.sortableChildren = true;
     this.gameNow = false;
     this.tick = 0;
@@ -73,8 +74,8 @@ export class GameScene extends Container implements IScene {
 
     this.startText = new Text('3', { fill: 'black', fontSize: 96 });
     this.startText.anchor.set(0.5);
+    this.startText.scale.set(textScale);
     this.startText.position.set(wr * 50, hr * 50);
-    this.startText.scale.set(Manager.scaleRatio);
     this.addChild(this.startText);
 
     this.lifeBar = new Graphics()
@@ -103,15 +104,14 @@ export class GameScene extends Container implements IScene {
     this.targetContainer.zIndex = 10;
     this.addChild(this.targetContainer);
 
-    this.scoreText = new Text(`Score: ${this.score}`, { fontFamily: 'RocknRoll One', fill: 'black', fontSize: 72 });
-    this.scoreText.position.set(wr * 1, hr * 3);
-    this.scoreText.scale.set(Manager.scaleRatio);
+    this.scoreText = new Text(`Score: ${this.score}`, { fontFamily: 'RocknRoll One', fill: 'black', fontSize: 24 });
+    this.scoreText.scale.set(textScale);
+    this.scoreText.position.set(wr * 2, hr * 3);
     this.addChild(this.scoreText);
 
-    this.fpsText = new BitmapText("null", { fontName: 'RocknRoll', tint: 0xff0000, fontSize: 96 });
-    this.fpsText.text = "0 fps";
+    this.fpsText = new BitmapText(" ", { fontName: 'RocknRoll', tint: 0xff0000, fontSize: 16 });
+    this.fpsText.scale.set(textScale);
     this.fpsText.position.set(wr * 90, hr * 96);
-    this.fpsText.scale.set(Manager.scaleRatio * 0.4);
     this.addChild(this.fpsText);
 
     this.gameLoad();
@@ -266,17 +266,18 @@ class ResultScreen extends Container {
     super();
     const wr: number = Manager.wr;
     const hr: number = Manager.hr;
+    const textScale: number = wr / 10;
 
-    ResultScreen.scoreText = new Text("Score: Null", { fill: 'black', fontSize: 96 });
+    ResultScreen.scoreText = new Text("Score: Null", { fill: 'black', fontSize: 72 });
     ResultScreen.scoreText.anchor.set(0.5);
+    ResultScreen.scoreText.scale.set(textScale);
     ResultScreen.scoreText.position.set(wr * 50, hr * 30);
-    ResultScreen.scoreText.scale.set(Manager.scaleRatio);
     this.addChild(ResultScreen.scoreText);
 
-    this.returnMenuText = new Text("Return Menu", { fill: 'black', fontSize: 72 });
+    this.returnMenuText = new Text("Return Menu", { fill: 'black', fontSize: 56 });
     this.returnMenuText.anchor.set(0.5);
+    this.returnMenuText.scale.set(textScale);
     this.returnMenuText.position.set(wr * 50, hr * 70);
-    this.returnMenuText.scale.set(Manager.scaleRatio);
     this.returnMenuText.interactive = true;
     this.returnMenuText.buttonMode = true;
     this.returnMenuText.on('pointerdown', () => Manager.changeScene(new GameMenuScene()), this);

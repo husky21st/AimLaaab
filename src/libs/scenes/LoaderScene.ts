@@ -17,18 +17,20 @@ export class LoaderScene extends Container implements IScene {
     super();
     console.log('Loader_cons');
     console.log('resolution',window.devicePixelRatio);
-    console.log('ratio',Manager.scaleRatio);
+    const wr: number = Manager.wr;
+    const hr: number = Manager.hr;
+    const textScale: number = wr / 10;
     const loaderBarWidth: number = Manager.width * 0.8;
 
     this.loaderBarFill = new Graphics();
     this.loaderBarFill.beginFill(0x9900ff, 1);
-    this.loaderBarFill.drawRect(0, 0, loaderBarWidth, 50 * Manager.scaleRatio);
+    this.loaderBarFill.drawRect(0, 0, loaderBarWidth, hr*5);
     this.loaderBarFill.endFill();
     this.loaderBarFill.scale.x = 0;
 
     this.loaderBarBoder = new Graphics();
     this.loaderBarBoder.lineStyle(10, 0x0, 1);
-    this.loaderBarBoder.drawRect(0, 0, loaderBarWidth, 50 * Manager.scaleRatio);
+    this.loaderBarBoder.drawRect(0, 0, loaderBarWidth, hr*5);
 
     this.loaderBar = new Container();
     this.loaderBar.addChild(this.loaderBarFill);
@@ -38,10 +40,10 @@ export class LoaderScene extends Container implements IScene {
     
     this.addChild(this.loaderBar);
 
-    this.text = new Text("画面がおかしくなったときはリロードしてね！", {fontFamily: 'RocknRoll One', fill: "black", fontSize: 96 });
+    this.text = new Text("画面がおかしくなったときはリロードしてね！", {fontFamily: 'RocknRoll One', fill: "black", fontSize: 36 });
     this.text.anchor.set(0.5);
     this.text.position.set(Manager.width / 2, Manager.height / 2);
-    this.text.scale.set(Manager.scaleRatio);
+    this.text.scale.set(textScale);
     this.text.alpha = 0;
     this.addChild(this.text);
 

@@ -14,6 +14,8 @@ export class Manager {
   // Width and Height are read-only after creation (for now)
   private static _width: number;
   private static _height: number;
+  private static _scaleRatioX: number;
+  private static _scaleRatioY: number;
 
   // With getters but not setters, these variables become read-only
   public static get width(): number {
@@ -29,9 +31,12 @@ export class Manager {
     return Manager._height / 100;
   }
 
-  public static get scaleRatio(): number {
-    const res: number = 2;
-    return Manager.width / (1080 * res);
+  public static get scaleRatioX(): number {
+    return Manager._scaleRatioX;
+  }
+
+  public static get scaleRatioY(): number {
+    return Manager._scaleRatioY;
   }
 
   // Use this function ONCE to start the entire machinery
@@ -40,16 +45,22 @@ export class Manager {
     // store our width and height
     Manager._width = width;
     Manager._height = height;
+    Manager._scaleRatioX = 1;
+    Manager._scaleRatioY = 1;
+    
+    // debugger;
     // Create our pixi app
     Manager.app = new PIXI.Application({
       view: canvas,
       resolution: window.devicePixelRatio || 1,
       backgroundColor: 0xbddbda,
-      autoDensity: true,
-      antialias: false,
+      autoDensity: false,
+      antialias: true,
       width: width,
       height: height,
     });
+    // debugger;
+
 
     gsap.registerPlugin(PixiPlugin);
     PixiPlugin.registerPIXI(PIXI);
@@ -63,34 +74,44 @@ export class Manager {
     Manager.app.ticker.add(Manager.update);
     console.log('a_1', Manager.currentScene);
     // listen for the browser telling us that the screen size changed
-    window.addEventListener('resize', Manager.resize);
-    // call it manually once so we are sure we are the correct size after starting
-    Manager.resize();
-    
+    //window.addEventListener('resize', Manager.resize);
+    //// call it manually once so we are sure we are the correct size after starting
+    //Manager.resize();
     Manager.app.renderer.plugins.interaction.cursorStyles['Target'] = "url('redTarget.png') 10 10, crosshair";
   }
 
-  public static resize(): void {
+  public static resizeToFullscreen(): void {
     // current screen size
-    const screenWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-    const screenHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+    console.log('width', window.innerWidth, screen.width, screen.availWidth, document.documentElement.clientWidth);
+    console.log('height', window.innerHeight, screen.height, screen.availHeight, document.documentElement.clientHeight);
+    Manager.currentScene.pivot.set(Manager.width / 2, Manager.height / 2);
+    Manager._scaleRatioX = screen.availWidth / Manager.width;
+    Manager._scaleRatioY = screen.availHeight / Manager.height;
+    Manager._width = screen.availWidth;
+    Manager._height = screen.availHeight;
 
-    // uniform scale for our game
-    const scale = Math.min(screenWidth / Manager.width, screenHeight / Manager.height);
+    Manager.app.renderer.resize(Manager.width, Manager.height);
+    Manager.currentScene.scale.set(Manager.scaleRatioX);
+    Manager.currentScene.position.set(Manager.width / 2, Manager.height / 2);
+    //Manager.currentScene.transform.position.set(Manager.scaleRatioX, Manager.scaleRatioY);
+    Manager.app.render();
 
-    // the "uniformly englarged" size for our game
-    const enlargedWidth = Math.floor(scale * Manager.width);
-    const enlargedHeight = Math.floor(scale * Manager.height);
+    //// uniform scale for our game
+    //const scale = Math.min(screenWidth / Manager.width, screenHeight / Manager.height);
 
-    // margins for centering our game
-    const horizontalMargin = (screenWidth - enlargedWidth) / 2;
-    const verticalMargin = (screenHeight - enlargedHeight) / 2;
+    //// the "uniformly englarged" size for our game
+    //const enlargedWidth = Math.floor(scale * Manager.width);
+    //const enlargedHeight = Math.floor(scale * Manager.height);
 
-    // now we use css trickery to set the sizes and margins
-    Manager.app.view.style.width = `${enlargedWidth}px`;
-    Manager.app.view.style.height = `${enlargedHeight}px`;
-    Manager.app.view.style.marginLeft = Manager.app.view.style.marginRight = `${horizontalMargin}px`;
-    Manager.app.view.style.marginTop = Manager.app.view.style.marginBottom = `${verticalMargin}px`;
+    //// margins for centering our game
+    //const horizontalMargin = (screenWidth - enlargedWidth) / 2;
+    //const verticalMargin = (screenHeight - enlargedHeight) / 2;
+
+    //// now we use css trickery to set the sizes and margins
+    //Manager.app.view.style.width = `${enlargedWidth}px`;
+    //Manager.app.view.style.height = `${enlargedHeight}px`;
+    //Manager.app.view.style.marginLeft = Manager.app.view.style.marginRight = `${horizontalMargin}px`;
+    //Manager.app.view.style.marginTop = Manager.app.view.style.marginBottom = `${verticalMargin}px`;
   }
 
   // Call this function when you want to go to a new scene
