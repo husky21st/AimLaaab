@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 module.exports = {
-  assetPrefix: process.env.NODE_ENV !== 'development'? '/AimLaaab': undefined,
+  assetPrefix: process.env.CI ? '/AimLaaab': undefined,
   distDir: 'build',
   reactStrictMode: true,
   poweredByHeader: false,

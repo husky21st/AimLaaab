@@ -13,10 +13,10 @@ class MyDocument extends Document {
           <meta charSet="UTF-8" />
           <link rel="icon" href="/target.ico" />
           <meta name="theme-color" content="#5588cc" />
-          <link
+          {/*<link
             href="https://fonts.googleapis.com/css2?family=RocknRoll+One&display=swap"
             rel="stylesheet"
-          />
+          />*/}
           <link
             href="https://fonts.googleapis.com/icon?family=Material+Icons"
             rel="stylesheet"

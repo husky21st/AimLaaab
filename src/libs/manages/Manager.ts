@@ -77,16 +77,43 @@ export class Manager {
     //window.addEventListener('resize', Manager.resize);
     //// call it manually once so we are sure we are the correct size after starting
     //Manager.resize();
+    Manager.ManagerInitSetting();
+  }
+
+  private static ManagerInitSetting(): void {
     Manager.app.renderer.plugins.interaction.cursorStyles['Target'] = "url('redTarget.png') 10 10, crosshair";
+    const _userAgent: string = window.navigator.userAgent.toLowerCase();
+    console.log(_userAgent);
+    let checkwebgl2: boolean = true;
+    if(_userAgent.indexOf('edge') != -1) {
+      console.log('use Edge');
+    } else if(_userAgent.indexOf('chrome') != -1) {
+      console.log('use Google Chrome');
+    } else if(_userAgent.indexOf('safari') != -1) {
+      console.log('use Safari');
+      checkwebgl2 = false;
+    } else if(_userAgent.indexOf('firefox') != -1) {
+      console.log('use FireFox');
+    } else if(_userAgent.indexOf('opera') != -1) {
+      console.log('use Opera');
+    } else {
+      console.log('undefined');
+      checkwebgl2 = false;
+    }
+    if(!checkwebgl2){
+      PIXI.settings.PREFER_ENV = PIXI.ENV.WEBGL;
+    }
+    console.log('ENVIRONMENT', PIXI.settings.PREFER_ENV);
   }
 
   public static resizeToFullscreen(): void {
     // current screen size
     console.log('width', window.innerWidth, screen.width, screen.availWidth, document.documentElement.clientWidth);
     console.log('height', window.innerHeight, screen.height, screen.availHeight, document.documentElement.clientHeight);
-    Manager.currentScene.pivot.set(Manager.width / 2, Manager.height / 2);
     Manager._scaleRatioX = screen.availWidth / Manager.width;
     Manager._scaleRatioY = screen.availHeight / Manager.height;
+    if(Manager.scaleRatioX === 1 && Manager.scaleRatioY === 1)return;
+    Manager.currentScene.pivot.set(Manager.width / 2, Manager.height / 2);
     Manager._width = screen.availWidth;
     Manager._height = screen.availHeight;
 

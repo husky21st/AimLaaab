@@ -3,9 +3,9 @@ import { Manager } from "libs/manages/Manager";
 import { LoaderScene } from "libs/scenes/LoaderScene";
 
 const MyCanvas: VFC = () => {
+  const docbody = document.body;
   const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  const showFullScreenButton = typeof window === "undefined" || document.body.requestFullscreen !== undefined;
+  const showFullScreenButton = typeof window === "undefined" || docbody.requestFullscreen;
   const handleFullscreen = () => {
     const canvas = canvasRef.current;
     if(!canvas) return;

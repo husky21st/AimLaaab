@@ -10,7 +10,7 @@ const MyCanvasWithNoSSR = dynamic(
 const Home: NextPage = () => {
   return (
       <>
-        <DoMagic />
+        {/*<DoMagic />*/}
         <MyCanvasWithNoSSR />
       </>
   );

@@ -1,4 +1,5 @@
 import { Container, Graphics, Loader, Text, BitmapFont } from 'pixi.js';
+import { WebfontLoaderPlugin } from "pixi-webfont-loader";
 import { sound } from "@pixi/sound";
 import { gsap } from "gsap";
 import { assets } from 'libs/asset/assets';
@@ -19,7 +20,7 @@ export class LoaderScene extends Container implements IScene {
     console.log('resolution',window.devicePixelRatio);
     const wr: number = Manager.wr;
     const hr: number = Manager.hr;
-    const textScale: number = wr / 10;
+    const textScale: number = wr / 40;
     const loaderBarWidth: number = Manager.width * 0.8;
 
     this.loaderBarFill = new Graphics();
@@ -40,15 +41,14 @@ export class LoaderScene extends Container implements IScene {
     
     this.addChild(this.loaderBar);
 
-    this.text = new Text("画面がおかしくなったときはリロードしてね！", {fontFamily: 'RocknRoll One', fill: "black", fontSize: 36 });
+    this.text = new Text("画面がおかしくなったときはリロードしてね！", {fontFamily: 'RocknRoll One', fill: 0x000000, fontSize: 64 });
     this.text.anchor.set(0.5);
     this.text.position.set(Manager.width / 2, Manager.height / 2);
-    this.text.scale.set(textScale);
+    this.text.scale.set(textScale * 2);
     this.text.alpha = 0;
     this.addChild(this.text);
 
-
-    
+    Loader.registerPlugin(WebfontLoaderPlugin);
     Loader.shared.add(assets);
     
     Loader.shared.onProgress.add(this.downloadProgress, this);
@@ -70,14 +70,14 @@ export class LoaderScene extends Container implements IScene {
     const openTL: gsap.core.Timeline = gsap.timeline();
     openTL
     .to(this.loaderBar, {
-      pixi : { alpha : 0}, duration: 0.1,
+      pixi : { alpha : 0}, duration: 1,
     })
     .to(this.text, {
-      pixi : { y : '-=' + Manager.height / 16, alpha : 1 }, duration : 0.5, yoyo : true, repeat : 1,
+      pixi : { y : '-=' + Manager.height / 16, alpha : 1 }, duration : 1, yoyo : true, repeat : 1,
       onComplete : () => {this.text.text = "※音が出ます"},
     })
     .to(this.text, {
-      pixi : { y : '-=' + Manager.height / 16, alpha : 1 }, duration : 0.5, yoyo : true, repeat : 1,
+      pixi : { y : '-=' + Manager.height / 16, alpha : 1 }, duration : 1, yoyo : true, repeat : 1,
       onComplete : () => Manager.changeScene(new GameMenuScene()),
     });
   }
