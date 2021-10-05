@@ -323,6 +323,8 @@ class ResultScreen extends Container {
   }
 
   public twitterShare(minute: number, second: number, score: number): void {
-    window.open(`http://twitter.com/share?text=Time-${minute}:${second}%0aScore-${score}$url=https://husky21st.github.io/AimLaaab/`);
+    const minuteText: string = fixText(minute);
+    const secondText: string = fixText(second);
+    window.open(`http://twitter.com/share?text=Time~${minuteText}:${secondText}%0aScore~${score}$url=https://husky21st.github.io/AimLaaab/`);
   }
 }
