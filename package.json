@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@pixi/sound": "^4.0.5",
-    "gsap": "^3.7.1",
+    "gsap": "^3.8.0",
     "next": "11.1.0",
     "pixi-webfont-loader": "^1.0.2",
     "pixi.js": "^6.1.2",
