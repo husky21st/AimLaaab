@@ -14,7 +14,7 @@ export class GameMenuScene extends Container implements IScene {
     const hr: number = Manager.hr;
     const textScale: number = wr / 20;
 
-    this.menuText = new BitmapText('AIM PRACTICE on WEB!', {fontName: 'RocknRoll', tint: 0x000000, fontSize: 96 });
+    this.menuText = new BitmapText('AimLaaab', {fontName: 'RocknRoll', tint: 0x000000, fontSize: 96 });
     this.menuText.anchor.set(0.5);
     this.menuText.position.set(wr * 50, hr * 30);
     this.menuText.scale.set(textScale);
