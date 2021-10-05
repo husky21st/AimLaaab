@@ -24,6 +24,12 @@ const setInterval = (tick: number): number => {
   return interval;
 }
 
+const fixText = (second: number): string => {
+  const s: number = Math.round(second);
+  return ('00' + s).slice(-2);
+};
+
+
 export class GameScene extends Container implements IScene {
   private startText: Text;
   private scoreText: Text;
@@ -37,9 +43,9 @@ export class GameScene extends Container implements IScene {
   private interval: number;
   private background: Graphics;
   private targetContainer: Container;
-  private resultScreen: Container;
+  private resultScreen: ResultScreen;
   private fpsText: BitmapText;
-
+  private timeText: BitmapText;
   constructor() {
     super();
     const wr: number = Manager.wr;
@@ -88,7 +94,7 @@ export class GameScene extends Container implements IScene {
     this.targets = new Array();
     this.targetContainer = new Container();
     for (let i = 0; i < 30; i++) {
-      let target = new Graphics()
+      const target = new Graphics()
         .beginFill(0xfffacd)
         .drawCircle(0, 0, wr * 4)
         .beginFill(0xff8c00)
@@ -114,6 +120,14 @@ export class GameScene extends Container implements IScene {
     this.fpsText.position.set(wr * 90, hr * 96);
     this.addChild(this.fpsText);
 
+    this.timeText = new BitmapText("00" + ":" + "00", { fontName: 'RocknRoll', tint: 0x000000, fontSize: 72 });
+    this.timeText.alpha = 0;
+    this.timeText.zIndex = -1000;
+    this.timeText.anchor.set(0.5, 0.6);
+    this.timeText.scale.set(textScale);
+    this.timeText.position.set(wr * 50, hr * 50);
+    this.addChild(this.timeText);
+
     this.gameLoad();
   }
 
@@ -122,7 +136,7 @@ export class GameScene extends Container implements IScene {
       pixi: { x: 0 },
       duration: 3,
     });
-    let gameNowTL = gsap.timeline();
+    const gameNowTL = gsap.timeline();
     gameNowTL
       .to(this.startText, {
         duration: 1,
@@ -145,6 +159,7 @@ export class GameScene extends Container implements IScene {
   private startGame(): void {
     console.log('gamestart');
     this.removeChild(this.startText);
+    this.timeText.alpha = 0.3;
     this.startText.destroy();
     this.gameNow = true;
   }
@@ -196,7 +211,7 @@ export class GameScene extends Container implements IScene {
     if(!this.gameNow) return;
     console.log('clickSCREEN');
     sound.play('lostPointSE');
-    this.changeScore(-Math.ceil(this.score * 0.05));
+    this.changeScore(-Math.ceil(this.score * 0.02));
   }
 
   private changeScore(point: number): void {
@@ -209,9 +224,13 @@ export class GameScene extends Container implements IScene {
     const delta: number = gsap.ticker.deltaRatio();
     this.tick += delta;
     this.limit -= delta / 20;
+    const tickSecond: number = Math.floor(this.tick/60);
+    const second: number = tickSecond % 60;
+    const minute: number = (tickSecond - second) / 60;
+    this.timeText.text = fixText(minute) + ':' + fixText(second);
     this.applyCanvas(delta);
     if(this.limit <= 0){
-      this.finishGame();
+      this.finishGame(minute, second);
       return;
     } else if(this.limit <= 20 && this.scoreText.alpha === 1){
       this.hideScore();
@@ -241,14 +260,17 @@ export class GameScene extends Container implements IScene {
     }
   }
 
-  private finishGame(): void {
+  private finishGame(minute: number, second: number): void {
     console.log('finish');
     this.gameNow = false;
+    this.timeText.alpha = 0;
     this.background.zIndex = 150;
     this.cursor = 'auto';
     gsap.killTweensOf(this.targetContainer.children);
     this.targetContainer.interactiveChildren = false;
-    ResultScreen.scoreText.text = `Score: ${this.score}`;
+    this.resultScreen.timeText.text = fixText(minute) + ':' + fixText(second);
+    this.resultScreen.scoreText.text = `Score: ${this.score}`;
+    this.resultScreen.shareButton.on('pointerdown', () => {this.resultScreen.twitterShare(minute, second, this.score)}, this);
     gsap.to(this.resultScreen, {
       pixi: {alpha: 1}, duration: 3,
     });
@@ -259,20 +281,36 @@ export class GameScene extends Container implements IScene {
 }
 
 class ResultScreen extends Container {
-  public static scoreText: Text;
-
+  public timeText: Text;
+  public scoreText: Text;
+  public shareButton: Text;
   private returnMenuText: Text;
   constructor() {
     super();
     const wr: number = Manager.wr;
     const hr: number = Manager.hr;
     const textScale: number = wr / 10;
+    
+    this.timeText = new Text("00:00", { fill: 'blue', fontSize: 64 });
+    this.timeText.anchor.set(0.5);
+    this.timeText.scale.set(textScale);
+    this.timeText.position.set(wr * 50, hr * 35);
+    this.addChild(this.timeText);
 
-    ResultScreen.scoreText = new Text("Score: Null", { fill: 'black', fontSize: 72 });
-    ResultScreen.scoreText.anchor.set(0.5);
-    ResultScreen.scoreText.scale.set(textScale);
-    ResultScreen.scoreText.position.set(wr * 50, hr * 30);
-    this.addChild(ResultScreen.scoreText);
+    this.scoreText = new Text("Score: Null", { fill: 'red', fontSize: 72 });
+    this.scoreText.anchor.set(0.5);
+    this.scoreText.scale.set(textScale);
+    this.scoreText.position.set(wr * 50, hr * 50);
+    this.addChild(this.scoreText);
+
+
+    this.shareButton = new Text("Tweet", { fill: 0x00acae, fontSize: 28 });
+    this.shareButton.anchor.set(0.5);
+    this.shareButton.scale.set(textScale);
+    this.shareButton.position.set(wr * 50, hr * 60);
+    this.shareButton.interactive = true;
+    this.shareButton.buttonMode = true;
+    this.addChild(this.shareButton);
 
     this.returnMenuText = new Text("Return Menu", { fill: 'black', fontSize: 56 });
     this.returnMenuText.anchor.set(0.5);
@@ -282,5 +320,9 @@ class ResultScreen extends Container {
     this.returnMenuText.buttonMode = true;
     this.returnMenuText.on('pointerdown', () => Manager.changeScene(new GameMenuScene()), this);
     this.addChild(this.returnMenuText);
+  }
+
+  public twitterShare(minute: number, second: number, score: number): void {
+    window.open(`http://twitter.com/share?text=Time-${minute}:${second}%0aScore-${score}%0a`);
   }
 }

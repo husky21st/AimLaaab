@@ -73,11 +73,11 @@ export class LoaderScene extends Container implements IScene {
       pixi : { alpha : 0}, duration: 1,
     })
     .to(this.text, {
-      pixi : { y : '-=' + Manager.height / 16, alpha : 1 }, duration : 1, yoyo : true, repeat : 1,
+      pixi : { alpha : 1 }, duration : 1, yoyo : true, repeat : 1,
       onComplete : () => {this.text.text = "※音が出ます"},
     })
     .to(this.text, {
-      pixi : { y : '-=' + Manager.height / 16, alpha : 1 }, duration : 1, yoyo : true, repeat : 1,
+      pixi : { alpha : 1 }, duration : 1, yoyo : true, repeat : 1,
       onComplete : () => Manager.changeScene(new GameMenuScene()),
     });
   }
